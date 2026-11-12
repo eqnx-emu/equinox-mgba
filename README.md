@@ -12,6 +12,11 @@ Equinox app (a Moonlight fork) to play GBA games.
 - The frontend (the code in `src/`, `tests/`, `docker/`, `tools/`): this repository is
   MIT (see `LICENSE`).
 - `extern/miniz` is MIT (see `extern/miniz/LICENSE`).
+- `romfs/shaders/` holds shaders copied unchanged from libretro/glsl-shaders, each
+  under its own author's license (GPL-2.0-or-later, MIT, Unlicense; two files carry
+  no license header). `romfs/shaders/LICENSES.md` lists them file by file, and the
+  GPL text is in `romfs/shaders/GPL-2.0.txt`. They are packed into the `.nro`'s
+  romfs and read at run time.
 
 ## Build
 
@@ -75,8 +80,16 @@ row).
 |----------|--------|
 | `size`   | `original` (default), `4:3`, `full` |
 | `smooth` | `pixel` (default), `sharp`, `soft` |
-| `filter` | `none` (default), `scanlines` |
+| `filter` | `none` (default), `scanlines`, `ntsc`, `zfast-crt`, `crt-easymode`, `crt-lottes`, `crt-hyllian`, `crt-geom` |
+| `intensity` | `medium` (default), `light`, `strong` |
 | `border` | `equinox` (default), `cover`, `tv`, `black` |
+
+Every filter except `none` is a RetroArch GLSL preset from `romfs/shaders/`, drawn
+over the game picture with OpenGL ES. `intensity` picks how strong it is: `medium` is
+the preset's own look, `light` and `strong` change its parameters. Only `crt-geom` on
+`strong` curves the picture. With a filter on, the preset decides the sampling, so
+`smooth` is not used (it is kept, and applies again with `none`). A filter that the
+console's GL cannot build is logged and the game shows without it.
 
     {"size": "full", "filter": "scanlines"}
 
