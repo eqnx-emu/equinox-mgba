@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(VERSION_MAJOR "1")
-set(VERSION_MINOR "1")
+set(VERSION_MINOR "2")
 set(VERSION_ALTER "0")
 set(APP_TITLE "Equinox GBA")
 set(APP_AUTHOR "Equinox")
@@ -41,6 +41,7 @@ if (EQX_HOST_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/extern/lzma)
     find_package(Threads REQUIRED)
     target_link_libraries(eqx_tests PRIVATE Threads::Threads)
+    target_compile_definitions(eqx_tests PRIVATE EQX_ROMFS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/romfs")
     add_test(NAME eqx_tests COMMAND eqx_tests)
 endif ()
 
@@ -60,6 +61,9 @@ if (NINTENDO_SWITCH)
     target_link_libraries(equinox-mgba PRIVATE
         ${EQX_CORE_LIB} SDL2_ttf SDL2 freetype harfbuzz freetype png bz2 z EGL glapi drm_nouveau nx)
 
+    target_compile_definitions(equinox-mgba PRIVATE EQX_APP_VERSION="${APP_VERSION}")
+
     nx_generate_nacp(equinox-mgba.nacp NAME "${APP_TITLE}" AUTHOR "${APP_AUTHOR}" VERSION "${APP_VERSION}")
-    nx_create_nro(equinox-mgba NACP equinox-mgba.nacp ICON ${APP_ICON})
+    nx_create_nro(equinox-mgba NACP equinox-mgba.nacp ICON ${APP_ICON}
+        ROMFS ${CMAKE_CURRENT_SOURCE_DIR}/romfs)
 endif ()
